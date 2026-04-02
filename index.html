@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Resultados Quiz - Professor</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"DM Sans",system-ui,sans-serif;background:#F0F2F5;color:#1C2B22;min-height:100vh;font-size:14px}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:#1A4A2E;border-radius:4px}
+
+/* LOGIN */
+#login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;background:linear-gradient(135deg,#0d2416 0%,#1A4A2E 60%,#0d2416 100%)}
+.lcard{background:#fff;border-radius:22px;padding:32px 26px;width:100%;max-width:360px;box-shadow:0 24px 64px #0007;text-align:center}
+.lcard .ico{font-size:2.5rem;margin-bottom:1rem}
+.lcard h1{font-family:"Syne",sans-serif;font-size:18px;font-weight:800;color:#1A4A2E;margin-bottom:4px}
+.lcard p{font-size:12px;color:#7A9B8A;margin-bottom:1.5rem}
+.lcard input{width:100%;padding:11px 13px;border:1.5px solid #C8E0D4;border-radius:10px;font-size:14px;font-family:inherit;background:#F0FAF5;color:#1C2B22;margin-bottom:10px;outline:none;transition:.15s}
+.lcard input:focus{border-color:#2EAD6B;background:#fff}
+.lbtn{width:100%;padding:12px;background:#1A4A2E;color:#fff;border:none;border-radius:11px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;transition:.15s}
+.lbtn:hover{background:#2E7D4A}
+.lerr{font-size:11px;color:#dc2626;margin-top:8px;min-height:14px}
+
+/* APP */
+#app{display:none;min-height:100vh}
+
+/* HEADER */
+#hdr{background:#1A4A2E;color:#fff;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px #0004}
+.hdr-l{display:flex;align-items:center;gap:8px}
+.hdr-ico{width:32px;height:32px;background:#D4AF37;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:17px;color:#1A4A2E;font-weight:900}
+.hdr-ttl{font-size:14px;font-weight:800;font-family:"Syne",sans-serif}
+.hdr-s{font-size:10px;color:#86efac}
+.hdr-r{display:flex;gap:8px;align-items:center}
+.hbtn{background:none;border:1px solid rgba(255,255,255,.3);color:#fff;font-size:12px;font-weight:600;padding:6px 12px;border-radius:8px;cursor:pointer;font-family:inherit;transition:.15s}
+.hbtn:hover{background:rgba(255,255,255,.15)}
+#sync-lbl{font-size:10px;color:#86efac}
+
+/* CONTENT */
+.content{max-width:1000px;margin:0 auto;padding:16px}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:16px}
+.stat-card{background:#fff;border:1px solid #E2E8F0;border-radius:12px;padding:14px;text-align:center;box-shadow:0 2px 8px #0001}
+.stat-card .num{font-size:26px;font-weight:800;color:#1A4A2E;font-family:"Syne",sans-serif}
+.stat-card .lbl{font-size:11px;color:#7A9B8A;margin-top:3px}
+
+/* FILTROS */
+.filtros{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center}
+.filtros select,.filtros input{border:1.5px solid #E2E8F0;border-radius:9px;padding:8px 11px;font-size:13px;font-family:inherit;background:#fff;color:#1C2B22;outline:none;transition:.15s}
+.filtros select:focus,.filtros input:focus{border-color:#2EAD6B}
+.btn-atualizar{padding:8px 14px;background:#1A4A2E;color:#fff;border:none;border-radius:9px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:.15s}
+.btn-atualizar:hover{background:#2E7D4A}
+.btn-csv{padding:8px 14px;background:#f1f5f9;color:#475569;border:none;border-radius:9px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:.15s}
+.btn-csv:hover{background:#e2e8f0}
+
+/* CARDS ALUNO */
+.student-card{background:#fff;border:1px solid #E2E8F0;border-radius:13px;margin-bottom:10px;box-shadow:0 2px 8px #0001;overflow:hidden}
+.sc-header{display:flex;align-items:center;gap:12px;padding:12px 14px;cursor:pointer;transition:.15s;user-select:none}
+.sc-header:hover{background:#F0FAF5}
+.sc-avatar{width:38px;height:38px;border-radius:50%;background:#1A4A2E;color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0}
+.sc-info{flex:1}
+.sc-name{font-size:14px;font-weight:700;color:#1C2B22}
+.sc-meta{font-size:11px;color:#7A9B8A;margin-top:2px}
+.score-pill{padding:3px 10px;border-radius:99px;font-size:11px;font-weight:700}
+.score-g{background:#D6F0E3;color:#1A4A2E}
+.score-a{background:#FEF3C7;color:#B45309}
+.score-r{background:#FEE2E2;color:#991B1B}
+.sc-chev{font-size:14px;color:#7A9B8A;transition:transform .2s}
+.sc-chev.open{transform:rotate(180deg)}
+.sc-body{display:none;border-top:1px solid #E2E8F0;padding:14px}
+.sc-body.open{display:block}
+.sc-section{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#2EAD6B;margin:10px 0 6px}
+.sc-section:first-child{margin-top:0}
+.mc-row{display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:1px solid #F0FAF5;font-size:12px}
+.mc-row:last-child{border-bottom:none}
+.mc-ic{width:22px;height:22px;border-radius:50%;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.mc-ok{background:#D6F0E3;color:#1A4A2E}
+.mc-err{background:#FEE2E2;color:#991B1B}
+.diss-item{padding:10px;background:#F0FAF5;border-radius:9px;margin-bottom:6px}
+.diss-q{font-size:12px;font-weight:700;color:#1C2B22;margin-bottom:4px;line-height:1.5}
+.diss-r{font-size:12px;color:#374151;line-height:1.6;white-space:pre-wrap}
+.diss-em{font-size:12px;color:#7A9B8A;font-style:italic}
+.tag-fraco{background:#FEE2E2;color:#991B1B;font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;display:inline-block;margin:2px}
+.tag-ok{background:#D6F0E3;color:#1A4A2E;font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;display:inline-block;margin:2px}
+
+/* EMPTY */
+.empty{text-align:center;padding:40px 20px;color:#7A9B8A}
+.empty-ico{font-size:36px;margin-bottom:8px}
+
+/* LOADING */
+.loading{text-align:center;padding:40px;color:#7A9B8A;font-size:13px}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="lcard">
+    <div class="ico">📊</div>
+    <h1>Resultados do Quiz</h1>
+    <p>Prof. Esp. Caio Filipe Duarte Araujo<br>Nocoes de Direito Administrativo</p>
+    <input type="password" id="l-pwd" placeholder="Senha de acesso" onkeydown="if(event.key==='Enter')doLogin()"/>
+    <button class="lbtn" onclick="doLogin()">Entrar</button>
+    <div class="lerr" id="lerr"></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div id="hdr">
+    <div class="hdr-l">
+      <div class="hdr-ico">📊</div>
+      <div>
+        <div class="hdr-ttl">Resultados do Quiz</div>
+        <div class="hdr-s">Direito Administrativo</div>
+      </div>
+    </div>
+    <div class="hdr-r">
+      <span id="sync-lbl">Carregando...</span>
+      <button class="hbtn" onclick="carregarResultados()">Atualizar</button>
+      <button class="hbtn" onclick="exportCSV()">Exportar CSV</button>
+      <button class="hbtn" onclick="doLogout()">Sair</button>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="stats-grid" id="stats-grid"></div>
+    <div class="filtros">
+      <select id="filtro-turma" onchange="renderList()">
+        <option value="">Todas as turmas</option>
+      </select>
+      <input type="text" id="filtro-busca" placeholder="Buscar aluno..." oninput="renderList()"/>
+      <button class="btn-atualizar" onclick="carregarResultados()">Atualizar</button>
+      <button class="btn-csv" onclick="exportCSV()">Exportar CSV</button>
+    </div>
+    <div id="student-list"></div>
+  </div>
+</div>
+
+<script>
+const PASS = 'excelencia2025';
+const FB_CONFIG = {
+  apiKey:"AIzaSyB2Y6Uggohrp8hMPIa3GyPqgqyOygRA0SU",
+  authDomain:"professor-digital-8f792.firebaseapp.com",
+  projectId:"professor-digital-8f792",
+  storageBucket:"professor-digital-8f792.firebasestorage.app",
+  messagingSenderId:"4515274923",
+  appId:"1:4515274923:web:25e9bc6d350a411972d7ee"
+};
+let _db=null, resultados=[], logado=false;
+
+function doLogin(){
+  const v=document.getElementById('l-pwd').value;
+  if(v===PASS){
+    logado=true;
+    document.getElementById('login-screen').style.display='none';
+    document.getElementById('app').style.display='block';
+    carregarResultados();
+  }else{
+    document.getElementById('lerr').textContent='Senha incorreta.';
+    document.getElementById('l-pwd').value='';
+  }
+}
+function doLogout(){logado=false;document.getElementById('app').style.display='none';document.getElementById('login-screen').style.display='flex';document.getElementById('l-pwd').value='';}
+
+async function initFB(){
+  if(_db)return true;
+  try{
+    const {initializeApp,getApps}=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
+    const {getFirestore}=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    const apps=getApps();
+    const app=apps.length?apps[0]:initializeApp(FB_CONFIG);
+    _db=getFirestore(app);
+    return true;
+  }catch(e){return false;}
+}
+
+async function carregarResultados(){
+  document.getElementById('sync-lbl').textContent='Carregando...';
+  document.getElementById('student-list').innerHTML='<div class="loading">Buscando resultados...</div>';
+  try{
+    await initFB();
+    const {collection,getDocs}=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    const snap=await getDocs(collection(_db,'quiz_resultados'));
+    resultados=[];
+    snap.forEach(function(doc){resultados.push(doc.data());});
+    resultados.sort(function(a,b){return (b.dataHora||'').localeCompare(a.dataHora||'');});
+    document.getElementById('sync-lbl').textContent=resultados.length+' resultados';
+    atualizarFiltroTurmas();
+    renderStats();
+    renderList();
+  }catch(e){
+    document.getElementById('sync-lbl').textContent='Erro!';
+    document.getElementById('student-list').innerHTML='<div class="empty"><div class="empty-ico">!</div><p>Erro ao carregar. Verifique a conexao.</p></div>';
+  }
+}
+
+function atualizarFiltroTurmas(){
+  const sel=document.getElementById('filtro-turma');
+  const turmas=[...new Set(resultados.map(function(r){return r.turma||'';}).filter(Boolean))].sort();
+  sel.innerHTML='<option value="">Todas as turmas</option>';
+  turmas.forEach(function(t){const o=document.createElement('option');o.value=t;o.textContent=t;sel.appendChild(o);});
+}
+
+function getFiltered(){
+  const turma=document.getElementById('filtro-turma').value;
+  const busca=(document.getElementById('filtro-busca').value||'').toLowerCase();
+  return resultados.filter(function(r){
+    const okT=!turma||(r.turma||'')=== turma;
+    const okB=!busca||(r.nome||'').toLowerCase().includes(busca);
+    return okT&&okB;
+  });
+}
+
+function renderStats(){
+  const fil=getFiltered();
+  const total=fil.length;
+  const avg=total?Math.round(fil.reduce(function(s,r){return s+(r.placar||0);},0)/total):0;
+  const a70=fil.filter(function(r){return (r.placar||0)>=70;}).length;
+  const b50=fil.filter(function(r){return (r.placar||0)<50;}).length;
+  document.getElementById('stats-grid').innerHTML=
+    '<div class="stat-card"><div class="num">'+total+'</div><div class="lbl">Responderam</div></div>'+
+    '<div class="stat-card"><div class="num">'+avg+'%</div><div class="lbl">Media da Turma</div></div>'+
+    '<div class="stat-card"><div class="num" style="color:#2EAD6B">'+a70+'</div><div class="lbl">Acima de 70%</div></div>'+
+    '<div class="stat-card"><div class="num" style="color:#dc2626">'+b50+'</div><div class="lbl">Abaixo de 50%</div></div>';
+}
+
+function initials(n){return (n||'?').trim().split(' ').filter(Boolean).slice(0,2).map(function(w){return w[0].toUpperCase();}).join('');}
+
+function renderList(){
+  renderStats();
+  const fil=getFiltered();
+  const list=document.getElementById('student-list');
+  if(!fil.length){list.innerHTML='<div class="empty"><div class="empty-ico"></div><p>Nenhum resultado encontrado.</p></div>';return;}
+  list.innerHTML='';
+  fil.forEach(function(r,idx){
+    const pct=r.placar||0;
+    const pillCls=pct>=70?'score-g':pct>=50?'score-a':'score-r';
+    const dt=r.dataHora?new Date(r.dataHora).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'}):'';
+
+    let mcRows='';
+    if(r.respostasMC&&r.respostasMC.length){
+      r.respostasMC.forEach(function(mc){
+        mcRows+='<div class="mc-row"><div class="mc-ic '+(mc.correto?'mc-ok':'mc-err')+'">'+(mc.correto?'v':'x')+'</div>'+
+          '<div style="flex:1;color:#374151;line-height:1.5">'+mc.enunciado+(mc.correto?'':' <em style="color:#9A3412">['+mc.topic+']</em>')+'</div></div>';
+      });
+    }else{mcRows='<p style="font-size:12px;color:#7A9B8A;font-style:italic">Questoes nao respondidas.</p>';}
+
+    let dissRows='';
+    if(r.dissertativas&&r.dissertativas.length){
+      r.dissertativas.forEach(function(d,i){
+        const resp=d.resposta&&d.resposta.trim()?'<div class="diss-r">'+d.resposta+'</div>':'<div class="diss-em">Nao respondida</div>';
+        dissRows+='<div class="diss-item"><div class="diss-q">Q'+(i+1)+': '+d.enunciado+'</div>'+resp+'</div>';
+      });
+    }else{dissRows='<p style="font-size:12px;color:#7A9B8A;font-style:italic">Nenhuma dissertativa enviada.</p>';}
+
+    let fracosHtml='',okHtml='';
+    if(r.temasFragos&&r.temasFragos.length)fracosHtml=r.temasFragos.map(function(t){return '<span class="tag-fraco">'+t+'</span>';}).join('');
+    if(r.temasOk&&r.temasOk.length)okHtml=r.temasOk.map(function(t){return '<span class="tag-ok">'+t+'</span>';}).join('');
+
+    const card=document.createElement('div');
+    card.className='student-card';
+    card.innerHTML=
+      '<div class="sc-header" onclick="toggleCard('+idx+')">'+
+        '<div class="sc-avatar">'+initials(r.nome)+'</div>'+
+        '<div class="sc-info">'+
+          '<div class="sc-name">'+(r.nome||'Sem nome')+'</div>'+
+          '<div class="sc-meta">'+(r.turma||'Turma nao informada')+(dt?' · '+dt:'')+'</div>'+
+        '</div>'+
+        '<span class="score-pill '+pillCls+'">'+pct+'%</span>'+
+        '<span style="font-size:12px;color:#7A9B8A;margin-left:6px">'+(r.acertos||0)+'/'+(r.total||15)+'</span>'+
+        '<div class="sc-chev" id="chev-'+idx+'">v</div>'+
+      '</div>'+
+      '<div class="sc-body" id="body-'+idx+'">'+
+        (fracosHtml?'<div class="sc-section">Precisa estudar mais</div><div>'+fracosHtml+'</div>':'')+
+        (okHtml?'<div class="sc-section">Domina bem</div><div>'+okHtml+'</div>':'')+
+        '<div class="sc-section">Multipla Escolha ('+(r.acertos||0)+'/'+(r.total||15)+' acertos)</div>'+mcRows+
+        '<div class="sc-section">Dissertativas</div>'+dissRows+
+      '</div>';
+    list.appendChild(card);
+  });
+}
+
+function toggleCard(idx){
+  document.getElementById('body-'+idx).classList.toggle('open');
+  document.getElementById('chev-'+idx).classList.toggle('open');
+}
+
+function exportCSV(){
+  if(!resultados.length){alert('Nenhum dado para exportar.');return;}
+  const rows=[['Nome','Turma','Data/Hora','Placar (%)','Acertos','Total','Temas Fracos','Temas OK']];
+  getFiltered().forEach(function(r){
+    rows.push([r.nome||'',r.turma||'',r.dataHora?new Date(r.dataHora).toLocaleString('pt-BR'):'',r.placar||0,r.acertos||0,r.total||15,(r.temasFragos||[]).join(' | '),(r.temasOk||[]).join(' | ')]);
+  });
+  var csv=rows.map(function(r){return r.map(function(c){var s=String(c).replace(/"/g,'""');return '"'+s+'"';}).join(',');}).join('
+');
+  var a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download='resultados_quiz.csv';
+  a.click();
+}
+
+// Auto-refresh a cada 60s
+setInterval(function(){if(logado)carregarResultados();},60000);
+</script>
+</body>
+</html>
